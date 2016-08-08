@@ -1,0 +1,29 @@
+#!/bin/bash
+
+
+# exclude tables
+EXTABLES=(stats, subscriptions, orders, leads, 
+logs, inner_logs,user_settings, traffic_redirect, __transactions,offer_settings, subaccounts traffic_managers  __buf rebills)
+PGTABLES=( cb_settings countries ip_ranges transactions blog_posts login_history netspeed rotators active_locks operators platforms blog_categories error_statistics 
+ blacklist stats_referral advertiser_requests translations action_flows goods caps conversion_types user_types withdrawal_accounts accounts
+ traffic_sources transaction_requests promo mailing_lists ip_geo_base groups prelandings redress_history submit_errors
+ ticket_answers authtokens bp_service_codes browsers categories countries_ranges currencies currencies_rates comebackers news notifications offer_weights
+ operating_systems users postback_urls platforms_urls organizations prelandings_settings rates_modifiers domains  offer_targeting
+ offers tickets )
+
+
+
+for table in ${PGTABLES[*]}; do
+    DUMPFILE="/home/adminroot/dump/${table}.sql"
+    echo "Backuping table ${table}"
+    pg_dump -Fc -O -h host_example -p 9125 -U pguser --disable-triggers -t ${table} ho2 > ${DUMPFILE}
+
+done
+
+
+for table in ${PGTABLES[*]}; do
+    DUMPFILE="/home/adminroot/dump/${table}.sql"
+    echo "Restoring table ${table}"
+     pg_restore --disable-triggers -Fc -p 9125 -U pguser -c -d ho2 ${DUMPFILE}
+
+done
